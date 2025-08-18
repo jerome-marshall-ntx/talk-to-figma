@@ -82,7 +82,7 @@ const server = new McpServer({
 // Add command line argument parsing
 const args = process.argv.slice(2);
 const serverArg = args.find(arg => arg.startsWith('--server='));
-const serverUrl = serverArg ? serverArg.split('=')[1] : 'localhost';
+const serverUrl = serverArg ? serverArg.split('=')[1] : 'talk-to-figma-socket.onrender.com';
 const WS_URL = serverUrl === 'localhost' ? `ws://${serverUrl}` : `wss://${serverUrl}`;
 
 // Document Info Tool
