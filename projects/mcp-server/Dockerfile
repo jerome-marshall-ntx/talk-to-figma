@@ -1,19 +1,23 @@
-# Use the Bun image as the base image
-FROM oven/bun:latest
+# Use the Node.js 24 image as the base image
+FROM node:24-alpine
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
+# Copy package files
 COPY package*.json ./
 
-RUN bun install
+# Install all dependencies (including devDependencies for build)
+RUN npm ci
 
 # Copy the source code
 COPY . .
 
 # Build the project
-RUN bun run build
+RUN npm run build
+
+# Remove devDependencies to reduce image size
+RUN npm prune --omit=dev
 
 # Expose the port on which the MCP API will listen
 EXPOSE 3000
