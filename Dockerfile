@@ -9,6 +9,9 @@ COPY package*.json ./
 
 RUN bun install
 
+# Copy the source code
+COPY . .
+
 # Expose the port on which the API will listen
 EXPOSE 3055
 
