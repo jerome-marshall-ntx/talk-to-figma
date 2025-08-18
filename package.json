@@ -13,8 +13,7 @@
   ],
   "type": "module",
   "scripts": {
-    "start": "bun run dist/server.js",
-    "socket": "bun run src/socket.ts",
+    "start": "bun run src/socket.ts",
     "socket-node": "node src/socket-node.ts",
     "setup": "./scripts/setup.sh",
     "build": "tsup",
