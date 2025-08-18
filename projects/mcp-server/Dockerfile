@@ -7,14 +7,11 @@ WORKDIR /app
 # Copy package files and npm config
 COPY package*.json .npmrc ./
 
-# Install all dependencies (including devDependencies for build)
-RUN npm ci
-
-# Copy the source code
+# Copy the source code (needed for prepare script)
 COPY . .
 
-# Build the project
-RUN npm run build
+# Install all dependencies (prepare script will build automatically)
+RUN npm ci
 
 # Remove devDependencies to reduce image size
 RUN npm prune --omit=dev
