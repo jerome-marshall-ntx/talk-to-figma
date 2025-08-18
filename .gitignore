@@ -1,4 +1,2 @@
-node_modules/
-.cursor/
-dist/
-docs/
+dist
+node_modules

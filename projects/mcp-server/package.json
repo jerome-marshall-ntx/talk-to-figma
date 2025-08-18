@@ -1,0 +1,42 @@
+{
+  "name": "cursor-talk-to-figma-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Figma integration with Cursor AI",
+  "main": "server.ts",
+  "bin": {
+    "cursor-talk-to-figma-mcp-server": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "scripts": {
+    "start": "node dist/remote-server.js",
+    "build": "tsc",
+    "dev": "node --loader ts-node/esm --watch server.ts",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "figma",
+    "mcp",
+    "cursor",
+    "ai",
+    "model-context-protocol"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.13.1",
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0",
+    "zod": "3.22.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.10.5",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
