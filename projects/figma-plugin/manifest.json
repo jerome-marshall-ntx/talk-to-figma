@@ -11,7 +11,10 @@
   "permissions": [],
   "networkAccess": {
     "allowedDomains": [
-      "https://google.com"
+      "https://google.com",
+      "https://talk-to-figma-socket.onrender.com",
+      "wss://talk-to-figma-socket.onrender.com",
+      "https://static.figma.com"
     ],
     "devAllowedDomains": [
       "http://localhost:3055",

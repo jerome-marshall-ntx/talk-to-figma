@@ -3,7 +3,7 @@
 
 // Plugin state
 const state = {
-  serverPort: 3055, // Default port
+  serverUrl: "https://talk-to-figma-socket.onrender.com", // Default server URL
 };
 
 
@@ -93,12 +93,12 @@ figma.on("run", ({ command }) => {
 
 // Update plugin settings
 function updateSettings(settings) {
-  if (settings.serverPort) {
-    state.serverPort = settings.serverPort;
+  if (settings.serverUrl) {
+    state.serverUrl = settings.serverUrl;
   }
 
   figma.clientStorage.setAsync("settings", {
-    serverPort: state.serverPort,
+    serverUrl: state.serverUrl,
   });
 }
 
@@ -1392,16 +1392,16 @@ async function setTextContent(params) {
   try {
     const savedSettings = await figma.clientStorage.getAsync("settings");
     if (savedSettings) {
-      if (savedSettings.serverPort) {
-        state.serverPort = savedSettings.serverPort;
-      }
+          if (savedSettings.serverUrl) {
+      state.serverUrl = savedSettings.serverUrl;
+    }
     }
 
     // Send initial settings to UI
     figma.ui.postMessage({
       type: "init-settings",
       settings: {
-        serverPort: state.serverPort,
+        serverUrl: state.serverUrl,
       },
     });
   } catch (error) {
