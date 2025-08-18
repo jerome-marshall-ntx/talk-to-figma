@@ -3076,19 +3076,24 @@ async function main() {
 }
 
 // Add a simple HTTP server for Render port binding (only if PORT env var is set)
-if (process.env.PORT) {
-  const http = require('http');
-  const port = process.env.PORT;
-  
-  const httpServer = http.createServer((req: any, res: any) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('MCP Server is running');
-  });
-  
-  httpServer.listen(port, () => {
-    logger.info(`HTTP server listening on port ${port} for Render`);
-  });
+async function startHttpServerForRender() {
+  if (process.env.PORT) {
+    const { createServer } = await import('http');
+    const port = process.env.PORT;
+    
+    const httpServer = createServer((req: any, res: any) => {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('MCP Server is running');
+    });
+    
+    httpServer.listen(port, () => {
+      logger.info(`HTTP server listening on port ${port} for Render`);
+    });
+  }
 }
+
+// Start HTTP server for Render if needed
+startHttpServerForRender();
 
 // Run the server
 main().catch(error => {
