@@ -3075,6 +3075,21 @@ async function main() {
   logger.info('FigmaMCP server running on stdio');
 }
 
+// Add a simple HTTP server for Render port binding (only if PORT env var is set)
+if (process.env.PORT) {
+  const http = require('http');
+  const port = process.env.PORT;
+  
+  const httpServer = http.createServer((req: any, res: any) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('MCP Server is running');
+  });
+  
+  httpServer.listen(port, () => {
+    logger.info(`HTTP server listening on port ${port} for Render`);
+  });
+}
+
 // Run the server
 main().catch(error => {
   logger.error(`Error starting FigmaMCP server: ${error instanceof Error ? error.message : String(error)}`);
