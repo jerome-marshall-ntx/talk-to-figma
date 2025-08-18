@@ -4,20 +4,20 @@ FROM node:24-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Copy package files
-COPY package*.json pnpm-lock.yaml ./
+# Copy package files and npm config
+COPY package*.json .npmrc ./
 
 # Install all dependencies (including devDependencies for build)
-RUN pnpm install --frozen-lockfile
+RUN npm ci
 
 # Copy the source code
 COPY . .
 
 # Build the project
-RUN pnpm run build
+RUN npm run build
+
+# Remove devDependencies to reduce image size
+RUN npm prune --omit=dev
 
 
 # Expose the port on which the MCP API will listen
