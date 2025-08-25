@@ -102,7 +102,7 @@ const server = Bun.serve({
             channel: channelName
           }));
 
-          console.log("Sending message to client:", data.id);
+          console.log("Sending message to client:", data);
 
           ws.send(JSON.stringify({
             type: "system",
