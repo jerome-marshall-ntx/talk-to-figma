@@ -77,7 +77,6 @@
         color: #cccccc;
       }
       .status {
-        margin-top: 16px;
         padding: 12px;
         border-radius: 6px;
         font-size: 14px;
@@ -95,7 +94,7 @@
         color: #66b3ff;
       }
       .section {
-        margin-bottom: 24px;
+        margin-bottom: 16px;
       }
       .hidden {
         display: none;
@@ -193,7 +192,7 @@
 
       <div id="content-connection" class="tab-content active">
         <div class="section">
-          <label for="server">WebSocket Server</label>
+          <label for="server">Server</label>
           <div style="display: flex; gap: 8px; align-items: center;">
             <input
               type="text"
@@ -206,7 +205,10 @@
         </div>
 
         <div id="connection-status" class="status disconnected">
-          Not connected to the MCP server
+          <div id="connection-message">Not connected to the MCP server</div>
+          <div id="channel-info" class="hidden" style="margin-top: 8px; font-weight: 600;">
+            Channel: <span id="channel-name"></span>
+          </div>
         </div>
 
         <div class="section">
@@ -272,6 +274,9 @@
       const connectButton = document.getElementById("btn-connect");
       const disconnectButton = document.getElementById("btn-disconnect");
       const connectionStatus = document.getElementById("connection-status");
+      const connectionMessage = document.getElementById("connection-message");
+      const channelInfo = document.getElementById("channel-info");
+      const channelName = document.getElementById("channel-name");
 
       // Tabs
       const tabs = document.querySelectorAll(".tab");
@@ -285,13 +290,22 @@
       const progressPercentage = document.getElementById("progress-percentage");
 
       // Initialize UI
-      function updateConnectionStatus(isConnected, message) {
+      function updateConnectionStatus(isConnected, message, channel = null) {
         state.connected = isConnected;
-        connectionStatus.innerHTML =
-          message ||
-          (isConnected
-            ? "Connected to the MCP server"
-            : "Not connected to the MCP server");
+        
+        // Update the main connection message
+        connectionMessage.textContent = message || (isConnected
+          ? "Connected to the MCP server"
+          : "Not connected to the MCP server");
+        
+        // Update channel information
+        if (isConnected && channel) {
+          channelName.textContent = channel;
+          channelInfo.classList.remove("hidden");
+        } else {
+          channelInfo.classList.add("hidden");
+        }
+        
         connectionStatus.className = `status ${
           isConnected ? "connected" : "disconnected"
         }`;
@@ -341,7 +355,8 @@
                   const channelName = data.channel;
                   updateConnectionStatus(
                     true,
-                    `Connected to server at ${serverUrl} in channel: <strong>${channelName}</strong>`
+                    `Connected to the MCP server.`,
+                    channelName
                   );
 
                   // Notify the plugin code

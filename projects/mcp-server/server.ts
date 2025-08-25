@@ -2962,52 +2962,78 @@ function sendCommandToFigma(
     // If not connected, try to connect first
     if (!ws || ws.readyState !== WebSocket.OPEN) {
       connectToFigma();
-      reject(new Error("Not connected to Figma. Attempting to connect..."));
+      
+      // Wait for connection to be established with timeout
+      let connectionAttempts = 0;
+      const maxAttempts = 50; // 5 seconds (50 * 100ms)
+      
+      const checkConnection = () => {
+        connectionAttempts++;
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          // Connection established, proceed with sending command
+          sendCommandInternal();
+        } else if (ws && ws.readyState === WebSocket.CONNECTING && connectionAttempts < maxAttempts) {
+          // Still connecting, check again in 100ms
+          setTimeout(checkConnection, 100);
+        } else {
+          // Connection failed or timeout
+          reject(new Error(`Failed to connect to Figma after ${connectionAttempts * 100}ms`));
+        }
+      };
+      
+      // Start checking for connection
+      setTimeout(checkConnection, 100);
       return;
     }
-
-    // Check if we have a valid channel for this command
-    if (command !== "join" && (!channel || typeof channel !== "string")) {
-      reject(new Error("Channel parameter is required for this command"));
-      return;
-    }
-
-    const id = uuidv4();
-    const request = {
-      id,
-      type: command === "join" ? "join" : "message",
-      channel: command === "join" ? (params as any).channel : channel,
-      message: {
-        id,
-        command,
-        params: {
-          ...(params as any),
-          commandId: id, // Include the command ID in params
-        },
-      },
-    };
-
-    // Set timeout for request
-    const timeout = setTimeout(() => {
-      if (pendingRequests.has(id)) {
-        pendingRequests.delete(id);
-        logger.error(`Request ${id} to Figma timed out after ${timeoutMs / 1000} seconds`);
-        reject(new Error('Request to Figma timed out'));
+    
+    // Already connected, send command immediately
+    sendCommandInternal();
+    
+    function sendCommandInternal() {
+      // Check if we have a valid channel for this command
+      if (command !== "join" && (!channel || typeof channel !== "string")) {
+        reject(new Error("Channel parameter is required for this command"));
+        return;
       }
-    }, timeoutMs);
 
-    // Store the promise callbacks to resolve/reject later
-    pendingRequests.set(id, {
-      resolve,
-      reject,
-      timeout,
-      lastActivity: Date.now()
-    });
+      const id = uuidv4();
+      const request = {
+        id,
+        type: command === "join" ? "join" : "message",
+        channel: command === "join" ? (params as any).channel : channel,
+        message: {
+          id,
+          command,
+          params: {
+            ...(params as any),
+            commandId: id, // Include the command ID in params
+          },
+        },
+      };
 
-    // Send the request
-    logger.info(`Sending command to Figma: ${command}`);
-    logger.debug(`Request details: ${JSON.stringify(request)}`);
-    ws.send(JSON.stringify(request));
+      // Set timeout for request
+      const timeout = setTimeout(() => {
+        if (pendingRequests.has(id)) {
+          pendingRequests.delete(id);
+          logger.error(`Request ${id} to Figma timed out after ${timeoutMs / 1000} seconds`);
+          reject(new Error('Request to Figma timed out'));
+        }
+      }, timeoutMs);
+
+      // Store the promise callbacks to resolve/reject later
+      pendingRequests.set(id, {
+        resolve,
+        reject,
+        timeout,
+        lastActivity: Date.now()
+      });
+
+      // Send the request
+      logger.info(`Sending command to Figma: ${command}`);
+      logger.debug(`Request details: ${JSON.stringify(request)}`);
+      ws.send(JSON.stringify(request));
+    }
   });
 }
 
