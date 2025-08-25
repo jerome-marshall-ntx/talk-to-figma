@@ -2956,7 +2956,7 @@ function sendCommandToFigma(
   command: FigmaCommand,
   params: unknown = {},
   channel: string,
-  timeoutMs: number = 30000
+  timeoutMs: number = 2 * 60 * 1000
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     // If not connected, try to connect first
